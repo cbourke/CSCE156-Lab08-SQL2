@@ -1,0 +1,197 @@
+\documentclass[12pt]{scrartcl}
+
+\input{../preamble.tex}
+
+\title{CSCE 156 -- Computer Science II}
+\subtitle{Lab 08 - SQL II}
+\author{Dr.\ Chris Bourke}
+\date{~}
+
+\begin{document}
+
+\maketitle
+
+\section*{Prior to Lab}
+
+\begin{enumerate}
+  \item Review this laboratory handout prior to lab.
+  \item Review the following materials:
+  \begin{itemize}
+    \item Creating Tables: \\
+    \url{http://www.w3schools.com/sql/sql_create_table.asp}\\
+    \url{http://www.w3schools.com/sql/sql_autoincrement.asp}
+    \item Types: \\
+    \url{http://www.w3schools.com/sql/sql_datatypes.asp}
+    \item Primary Keys: \\
+    \url{http://www.w3schools.com/sql/sql_primarykey.asp}
+    \item Foreign Keys: \\
+    \url{http://www.w3schools.com/sql/sql_foreignkey.asp}
+    \item Altering Tables: \\
+    \url{http://www.w3schools.com/sql/sql_alter.asp}
+    \item Constraints: \\
+    \url{http://www.w3schools.com/sql/sql_notnull.asp}\\
+    \url{http://www.w3schools.com/sql/sql_unique.asp}\\
+	\url{http://www.w3schools.com/sql/sql_default.asp}
+  \end{itemize}  
+\end{enumerate}
+
+\section*{Lab Objectives \& Topics}
+Following the lab, you should be able to:
+\begin{itemize}
+  \item Gain experience with simple database design strategy
+  \item Understand the motivation for entity relations and concepts
+  \item Learn how to create a database from your design
+\end{itemize}
+
+\input{../peerText.tex}
+
+\section*{Getting Started}
+
+Material for this lab is available for download on the course website
+from the previous lab.
+%Clone the project code for this lab from GitHub in Eclipse using the
+%URL, \url{https://github.com/cbourke/CSCE156-Lab06-Polymorphism}.
+%Refer to Lab 01 for instructions on how to clone a project from GitHub.
+
+\section*{Manipulating Data}
+
+In this lab we will continue to work with the Album database.  For 
+reference, the database schema is presented in Figure \ref{figure:albumDB} 
+as an Entity-Relation diagram.
+
+\begin{figure}[h]
+\centering
+\includegraphics[scale=.650]{images/albums}
+\caption{Albums Database}
+\label{figure:albumDB}
+\end{figure}
+
+Data can be added to a database using \mintinline{sql}{insert} statements 
+and existing data in a database can be manipulated using \mintinline{sql}{update}
+and \mintinline{sql}{delete} queries.  However, records in a table that may be
+referenced by records in other tables via a foreign key cannot be deleted
+unless the referencing records are handled first.  Likewise, data that requires
+a reference to data in other tables cannot be inserted prior to inserting the
+referenced records.  
+
+Complete the first section of your worksheet.
+
+\section*{Altering a Database}
+
+A careful examination of the DDL file provided (\mintinline{text}{albums.sql}) 
+indicates how these tables were built and related to each other.  New 
+requirements may mean that the underlying data model must be modified to 
+support new pieces of data.  For example, if we wanted to keep track of the 
+emails of each Musician we could modify the Musicians table to include an 
+email address.  SQL allows us to \emph{alter} existing tables using
+the following syntax.
+
+\mintinline{sql}{alter table Musician add emailAddress varchar(50);}
+
+A better solution would add support for multiple emails in which case we 
+would need to add an entirely new table.
+
+\begin{minted}{sql}
+create table Email (
+  emailID int not null primary key auto_increment
+  musicianId int not null,
+  address varchar(100) not null,
+  foreign key `fk_email_to_musician` (musicianId) 
+    references Musician(musicianId)
+);
+\end{minted}
+
+In this lab, you will build on the Albums database to add support 
+for modeling venues (concert halls) at which bands are under 
+contract to play select album songs. You will add tables and keys 
+to this database to support this functionality.
+
+\section*{Developing a Solution}
+
+Design entities and relation(s) to extend the Albums database such 
+that it supports the following concert information:
+
+\begin{itemize}
+  \item The band playing at the concert
+  \item The band's select album songs played at the concert
+  \item The date the concert was held (use an appropriately formatted 
+    \mintinline{sql}{VARCHAR}, date time types are not 
+    cross-compatible) 
+  \item The name of the hall where the concert was held
+  \item The number of seats in the concert hall
+  \item The number of concert tickets sold
+\end{itemize}
+
+The entities and relations illustrated in Figure \ref{figure:hint} serve as a 
+basis for the solution. You will add fields and another entity 
+by following the first section of the worksheet.
+ 
+\begin{figure}[h]
+\centering
+\includegraphics[scale=.50]{images/hint}
+\caption{The Song table is part of the original database, relations
+between the concert and concert songs are suggested.}
+\label{figure:hint}
+\end{figure}
+
+The \mintinline{sql}{Song} table is part of the original Albums 
+database. Relationships between two entities are indicated by a 
+line between the two entities and in general are either a 
+one-to-one relationship or a one-to-many relationship.  Figure \ref{figure:example} shows the standard way to draw the two types 
+of relations.
+ 
+\begin{figure}[h]
+\centering
+\includegraphics[scale=.50]{images/Example}
+\caption{The line connecting the Country entity and the Capital entity describes a one-to-one relation. The line connecting the Team entity with the TeamMember entity describes a one-to-many relation.}
+\label{figure:example}
+\end{figure}
+
+Complete the first section of the worksheet. 
+
+\section*{SQL Script Modification}
+
+Now that you have properly designed the database modifications, 
+you will realize them by writing SQL scripts (or modifying the 
+original DDL file, \mintinline{text}{albums.sql}).  Follow the directions in the 
+worksheet in order to add the entities and relations you have 
+designed in the previous activity to the tables and relations 
+in the original Albums database.
+
+\section*{Advanced Activity (Optional)}
+
+Consider the venues listed in Table \ref{table:concertHalls}.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{l|l}
+Venue Name & Capacity \\
+\hline\hline
+The Mega Dome & 12,000 \\
+The Gorge & 32,000 \\
+Hotel Concert Hall & 5,000 \\
+Cruise Concert Hall & 2,000 \\
+\end{tabular}
+\caption{The concert halls}
+\label{table:concertHalls}
+\end{table}
+
+Say that one concert was held at each of the concert halls 
+according to the following rules listed bellow. Write an SQL 
+script to insert data into the newly designed tables using the 
+rules bellow.
+
+\begin{enumerate}
+  \item In descending order of concert hall capacity, bands are 
+    assigned a concert hall in descending order of the number of 
+    their album songs and ascending order of their band name. That 
+    means the band with the most number of album songs and the 
+    smallest (lexicographically) band name gets the highest capacity 
+    concert hall and the band with the second highest number of album 
+    songs get the second highest capacity concert hall.
+  \item The songs played at each concert are those which have at least 
+    one album song of 5 minutes or longer.
+  \item Each concert is sold out.
+\end{enumerate}
+
+\end{document}
